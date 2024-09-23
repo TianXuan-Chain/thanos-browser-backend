@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.thanos.core.depositChain.repository.ThanosBlockMapper" >
+    <resultMap id="BaseResultMap" type="com.netease.thanos.core.depositChain.entity.ThanosBlock" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="pk_hash" property="pkHash" jdbcType="VARCHAR" />
+        <result column="number" property="number" jdbcType="BIGINT" />
+        <result column="event_id" property="eventId" jdbcType="VARCHAR" />
+        <result column="pre_event_id" property="preEventId" jdbcType="VARCHAR" />
+        <result column="epoch" property="epoch" jdbcType="BIGINT" />
+        <result column="timestamp" property="timestamp" jdbcType="TIMESTAMP" />
+        <result column="evm_tnx_num" property="evmTnxNum" jdbcType="BIGINT" />
+        <result column="global_event_num" property="globalEventNum" jdbcType="BIGINT" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="version" property="version" jdbcType="BIGINT" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.netease.thanos.core.depositChain.entity.ThanosBlock" extends="BaseResultMap" >
+        <result column="detail_info" property="detailInfo" jdbcType="LONGVARCHAR" />
+    </resultMap>
+    <sql id="Example_Where_Clause" >
+        <where >
+            <foreach collection="oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+             AND is_delete = 0 
+        </where>
+    </sql>
+    <sql id="Base_Column_List" >
+        id, pk_hash, number, event_id, pre_event_id, epoch, timestamp, evm_tnx_num, global_event_num, 
+        create_time, version, remark
+    </sql>
+    <sql id="Blob_Column_List" >
+        detail_info
+    </sql>
+    <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_block
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        from thanos_block
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null" >
+            limit 
+            <if test="offset != null" >
+                #{offset} , 
+            </if>
+            #{rows} 
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_block
+        where id = #{id,jdbcType=BIGINT}
+         AND is_delete = 0 
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        UPDATE thanos_block
+        <set >
+            is_delete = 1,
+            <if test="remark != null" >
+                remark = concat(remark,#{remark,jdbcType=VARCHAR}),
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </delete>
+    <insert id="insert" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlock" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_block (pk_hash, number, event_id, 
+            pre_event_id, epoch, timestamp, 
+            evm_tnx_num, global_event_num, create_time, 
+            version, remark, detail_info
+            )
+        values (#{pkHash,jdbcType=VARCHAR}, #{number,jdbcType=BIGINT}, #{eventId,jdbcType=VARCHAR}, 
+            #{preEventId,jdbcType=VARCHAR}, #{epoch,jdbcType=BIGINT}, #{timestamp,jdbcType=TIMESTAMP}, 
+            #{evmTnxNum,jdbcType=BIGINT}, #{globalEventNum,jdbcType=BIGINT}, now(), 
+            1, #{remark,jdbcType=VARCHAR}, #{detailInfo,jdbcType=LONGVARCHAR}
+            )
+    </insert>
+    <insert id="insertSelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlock" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_block
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="pkHash != null" >
+                pk_hash,
+            </if>
+            <if test="number != null" >
+                number,
+            </if>
+            <if test="eventId != null" >
+                event_id,
+            </if>
+            <if test="preEventId != null" >
+                pre_event_id,
+            </if>
+            <if test="epoch != null" >
+                epoch,
+            </if>
+            <if test="timestamp != null" >
+                timestamp,
+            </if>
+            <if test="evmTnxNum != null" >
+                evm_tnx_num,
+            </if>
+            <if test="globalEventNum != null" >
+                global_event_num,
+            </if>
+            create_time,
+            version,
+            <if test="remark != null" >
+                remark,
+            </if>
+            <if test="detailInfo != null" >
+                detail_info,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="pkHash != null" >
+                #{pkHash,jdbcType=VARCHAR},
+            </if>
+            <if test="number != null" >
+                #{number,jdbcType=BIGINT},
+            </if>
+            <if test="eventId != null" >
+                #{eventId,jdbcType=VARCHAR},
+            </if>
+            <if test="preEventId != null" >
+                #{preEventId,jdbcType=VARCHAR},
+            </if>
+            <if test="epoch != null" >
+                #{epoch,jdbcType=BIGINT},
+            </if>
+            <if test="timestamp != null" >
+                #{timestamp,jdbcType=TIMESTAMP},
+            </if>
+            <if test="evmTnxNum != null" >
+                #{evmTnxNum,jdbcType=BIGINT},
+            </if>
+            <if test="globalEventNum != null" >
+                #{globalEventNum,jdbcType=BIGINT},
+            </if>
+            now(),
+            1,
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="detailInfo != null" >
+                #{detailInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockExample" resultType="java.lang.Integer" >
+        select count(*) from thanos_block
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <update id="updateByPrimaryKeySelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlock" >
+        update thanos_block
+        <set >
+            <if test="pkHash != null" >
+                pk_hash = #{pkHash,jdbcType=VARCHAR},
+            </if>
+            <if test="number != null" >
+                number = #{number,jdbcType=BIGINT},
+            </if>
+            <if test="eventId != null" >
+                event_id = #{eventId,jdbcType=VARCHAR},
+            </if>
+            <if test="preEventId != null" >
+                pre_event_id = #{preEventId,jdbcType=VARCHAR},
+            </if>
+            <if test="epoch != null" >
+                epoch = #{epoch,jdbcType=BIGINT},
+            </if>
+            <if test="timestamp != null" >
+                timestamp = #{timestamp,jdbcType=TIMESTAMP},
+            </if>
+            <if test="evmTnxNum != null" >
+                evm_tnx_num = #{evmTnxNum,jdbcType=BIGINT},
+            </if>
+            <if test="globalEventNum != null" >
+                global_event_num = #{globalEventNum,jdbcType=BIGINT},
+            </if>
+              version = version + 1,
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="detailInfo != null" >
+                detail_info = #{detailInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlock" >
+        update thanos_block
+        set pk_hash = #{pkHash,jdbcType=VARCHAR},
+            number = #{number,jdbcType=BIGINT},
+            event_id = #{eventId,jdbcType=VARCHAR},
+            pre_event_id = #{preEventId,jdbcType=VARCHAR},
+            epoch = #{epoch,jdbcType=BIGINT},
+            timestamp = #{timestamp,jdbcType=TIMESTAMP},
+            evm_tnx_num = #{evmTnxNum,jdbcType=BIGINT},
+            global_event_num = #{globalEventNum,jdbcType=BIGINT},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR},
+            detail_info = #{detailInfo,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlock" >
+        update thanos_block
+        set pk_hash = #{pkHash,jdbcType=VARCHAR},
+            number = #{number,jdbcType=BIGINT},
+            event_id = #{eventId,jdbcType=VARCHAR},
+            pre_event_id = #{preEventId,jdbcType=VARCHAR},
+            epoch = #{epoch,jdbcType=BIGINT},
+            timestamp = #{timestamp,jdbcType=TIMESTAMP},
+            evm_tnx_num = #{evmTnxNum,jdbcType=BIGINT},
+            global_event_num = #{globalEventNum,jdbcType=BIGINT},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        insert into thanos_block (pk_hash, number, event_id, 
+            pre_event_id, epoch, timestamp, 
+            evm_tnx_num, global_event_num, create_time, 
+            version, remark, detail_info) VALUES 
+        <foreach collection="list" item="item" separator="," >
+             (#{item.pkHash,jdbcType=VARCHAR}, #{item.number,jdbcType=BIGINT}, #{item.eventId,jdbcType=VARCHAR}, 
+                #{item.preEventId,jdbcType=VARCHAR}, #{item.epoch,jdbcType=BIGINT}, #{item.timestamp,jdbcType=TIMESTAMP}, 
+                #{item.evmTnxNum,jdbcType=BIGINT}, #{item.globalEventNum,jdbcType=BIGINT}, now(), 
+                1, #{item.remark,jdbcType=VARCHAR}, #{item.detailInfo,jdbcType=LONGVARCHAR})
+        </foreach>
+    </insert>
+    <select id="maxNumber" resultType="java.lang.Long" >
+        select max(number) from thanos_block
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <select id="minNumber" resultType="java.lang.Long" >
+        select min(number) from thanos_block
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.thanos.core.depositChain.repository.ThanosBlockchaininfoMapper" >
+    <resultMap id="BaseResultMap" type="com.netease.thanos.core.depositChain.entity.ThanosBlockchaininfo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="last_block_num" property="lastBlockNum" jdbcType="BIGINT" />
+        <result column="txn_count" property="txnCount" jdbcType="BIGINT" />
+        <result column="epoch" property="epoch" jdbcType="BIGINT" />
+        <result column="round" property="round" jdbcType="BIGINT" />
+        <result column="avg_time" property="avgTime" jdbcType="DECIMAL" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="version" property="version" jdbcType="BIGINT" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Example_Where_Clause" >
+        <where >
+            <foreach collection="oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+             AND is_delete = 0 
+        </where>
+    </sql>
+    <sql id="Base_Column_List" >
+        id, last_block_num, txn_count, epoch, round, avg_time, create_time, version, remark
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockchaininfoExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        from thanos_blockChainInfo
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null" >
+            limit 
+            <if test="offset != null" >
+                #{offset} , 
+            </if>
+            #{rows} 
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from thanos_blockChainInfo
+        where id = #{id,jdbcType=BIGINT}
+         AND is_delete = 0 
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        UPDATE thanos_blockChainInfo
+        <set >
+            is_delete = 1,
+            <if test="remark != null" >
+                remark = concat(remark,#{remark,jdbcType=VARCHAR}),
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </delete>
+    <insert id="insert" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockchaininfo" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_blockChainInfo (last_block_num, txn_count, epoch, 
+            round, avg_time, create_time, 
+            version, remark)
+        values (#{lastBlockNum,jdbcType=BIGINT}, #{txnCount,jdbcType=BIGINT}, #{epoch,jdbcType=BIGINT}, 
+            #{round,jdbcType=BIGINT}, #{avgTime,jdbcType=DECIMAL}, now(), 
+            1, #{remark,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockchaininfo" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_blockChainInfo
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="lastBlockNum != null" >
+                last_block_num,
+            </if>
+            <if test="txnCount != null" >
+                txn_count,
+            </if>
+            <if test="epoch != null" >
+                epoch,
+            </if>
+            <if test="round != null" >
+                round,
+            </if>
+            <if test="avgTime != null" >
+                avg_time,
+            </if>
+            create_time,
+            version,
+            <if test="remark != null" >
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="lastBlockNum != null" >
+                #{lastBlockNum,jdbcType=BIGINT},
+            </if>
+            <if test="txnCount != null" >
+                #{txnCount,jdbcType=BIGINT},
+            </if>
+            <if test="epoch != null" >
+                #{epoch,jdbcType=BIGINT},
+            </if>
+            <if test="round != null" >
+                #{round,jdbcType=BIGINT},
+            </if>
+            <if test="avgTime != null" >
+                #{avgTime,jdbcType=DECIMAL},
+            </if>
+            now(),
+            1,
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockchaininfoExample" resultType="java.lang.Integer" >
+        select count(*) from thanos_blockChainInfo
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <update id="updateByPrimaryKeySelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockchaininfo" >
+        update thanos_blockChainInfo
+        <set >
+            <if test="lastBlockNum != null" >
+                last_block_num = #{lastBlockNum,jdbcType=BIGINT},
+            </if>
+            <if test="txnCount != null" >
+                txn_count = #{txnCount,jdbcType=BIGINT},
+            </if>
+            <if test="epoch != null" >
+                epoch = #{epoch,jdbcType=BIGINT},
+            </if>
+            <if test="round != null" >
+                round = #{round,jdbcType=BIGINT},
+            </if>
+            <if test="avgTime != null" >
+                avg_time = #{avgTime,jdbcType=DECIMAL},
+            </if>
+              version = version + 1,
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.netease.thanos.core.depositChain.entity.ThanosBlockchaininfo" >
+        update thanos_blockChainInfo
+        set last_block_num = #{lastBlockNum,jdbcType=BIGINT},
+            txn_count = #{txnCount,jdbcType=BIGINT},
+            epoch = #{epoch,jdbcType=BIGINT},
+            round = #{round,jdbcType=BIGINT},
+            avg_time = #{avgTime,jdbcType=DECIMAL},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        insert into thanos_blockChainInfo (last_block_num, txn_count, epoch, 
+            round, avg_time, create_time, version, remark
+            ) VALUES 
+        <foreach collection="list" item="item" separator="," >
+             (#{item.lastBlockNum,jdbcType=BIGINT}, #{item.txnCount,jdbcType=BIGINT}, #{item.epoch,jdbcType=BIGINT}, 
+                #{item.round,jdbcType=BIGINT}, #{item.avgTime,jdbcType=DECIMAL}, now(), 1, #{item.remark,jdbcType=VARCHAR}
+                )
+        </foreach>
+    </insert>
+</mapper>

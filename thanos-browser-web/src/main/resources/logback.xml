@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="GBK"?>
+<configuration debug="false">
+    <appender name="CONSOLE"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>
+                %d %-4relative [%thread] %-5level %logger{36} [T:%X{trans}] - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-NORMAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/thanos-browser-normal.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/thanos-browser-normal.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <maxFileSize>500MB</maxFileSize>
+            <totalSizeCap>30GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%thread] %level %logger{35} [T:%X{trans}] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/thanos-browser.log</file>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers class="net.logstash.logback.composite.loggingevent.LoggingEventJsonProviders">
+                <pattern>
+                    <pattern>
+                        {
+                        "schema":"com.netease.leihuo.star.star.model.tables.v1.OnChainService",
+                        "ts":"%d{yyyy-MM-dd HH:mm:ss}",
+                        "thread":"%thread",
+                        "level":"%level",
+                        "msg":"%msg",
+                        "details":"%ex"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/thanos-browser.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <maxFileSize>500MB</maxFileSize>
+            <totalSizeCap>30GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="org.mongodb.driver" level="error"/>
+
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-NORMAL"/>
+    </root>
+</configuration>

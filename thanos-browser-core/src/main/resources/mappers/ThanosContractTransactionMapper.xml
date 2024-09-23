@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.thanos.core.depositChain.repository.ThanosContractTransactionMapper" >
+    <resultMap id="BaseResultMap" type="com.netease.thanos.core.depositChain.entity.ThanosContractTransaction" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <id column="contract_address" property="contractAddress" jdbcType="VARCHAR" />
+        <result column="pk_hash" property="pkHash" jdbcType="VARCHAR" />
+        <result column="partition_key" property="partitionKey" jdbcType="BIGINT" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="business_time" property="businessTime" jdbcType="TIMESTAMP" />
+        <result column="version" property="version" jdbcType="BIGINT" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.netease.thanos.core.depositChain.entity.ThanosContractTransaction" extends="BaseResultMap" >
+        <result column="tx_detail" property="txDetail" jdbcType="LONGVARCHAR" />
+    </resultMap>
+    <sql id="Example_Where_Clause" >
+        <where >
+            <foreach collection="oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+             AND is_delete = 0 
+        </where>
+    </sql>
+    <sql id="Base_Column_List" >
+        id, contract_address, pk_hash, partition_key, create_time, business_time, version, 
+        remark
+    </sql>
+    <sql id="Blob_Column_List" >
+        tx_detail
+    </sql>
+    <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransactionExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_contract_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null" >
+            limit
+            <if test="offset != null" >
+                #{offset} ,
+            </if>
+            #{rows}
+        </if>
+    </select>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransactionExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        from thanos_contract_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null" >
+            limit 
+            <if test="offset != null" >
+                #{offset} , 
+            </if>
+            #{rows} 
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransactionKey" >
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_contract_transaction
+        where id = #{id,jdbcType=BIGINT}
+          and contract_address = #{contractAddress,jdbcType=VARCHAR}
+         AND is_delete = 0 
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransactionKey" >
+        UPDATE thanos_contract_transaction
+        <set >
+            is_delete = 1,
+            <if test="remark != null" >
+                remark = concat(remark,#{remark,jdbcType=VARCHAR}),
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+          and contract_address = #{contractAddress,jdbcType=VARCHAR}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </delete>
+    <insert id="insert" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransaction" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_contract_transaction (contract_address, pk_hash, partition_key, 
+            create_time, business_time, version, 
+            remark, tx_detail)
+        values (#{contractAddress,jdbcType=VARCHAR}, #{pkHash,jdbcType=VARCHAR}, #{partitionKey,jdbcType=BIGINT}, 
+            now(), #{businessTime,jdbcType=TIMESTAMP}, 1, 
+            #{remark,jdbcType=VARCHAR}, #{txDetail,jdbcType=LONGVARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransaction" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_contract_transaction
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="contractAddress != null" >
+                contract_address,
+            </if>
+            <if test="pkHash != null" >
+                pk_hash,
+            </if>
+            <if test="partitionKey != null" >
+                partition_key,
+            </if>
+            create_time,
+            <if test="businessTime != null" >
+                business_time,
+            </if>
+            version,
+            <if test="remark != null" >
+                remark,
+            </if>
+            <if test="txDetail != null" >
+                tx_detail,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="contractAddress != null" >
+                #{contractAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="pkHash != null" >
+                #{pkHash,jdbcType=VARCHAR},
+            </if>
+            <if test="partitionKey != null" >
+                #{partitionKey,jdbcType=BIGINT},
+            </if>
+            now(),
+            <if test="businessTime != null" >
+                #{businessTime,jdbcType=TIMESTAMP},
+            </if>
+            1,
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="txDetail != null" >
+                #{txDetail,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransactionExample" resultType="java.lang.Integer" >
+        select count(*) from thanos_contract_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <update id="updateByPrimaryKeySelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransaction" >
+        update thanos_contract_transaction
+        <set >
+            <if test="pkHash != null" >
+                pk_hash = #{pkHash,jdbcType=VARCHAR},
+            </if>
+            <if test="partitionKey != null" >
+                partition_key = #{partitionKey,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="businessTime != null" >
+                business_time = #{businessTime,jdbcType=TIMESTAMP},
+            </if>
+              version = version + 1,
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="txDetail != null" >
+                tx_detail = #{txDetail,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+          and contract_address = #{contractAddress,jdbcType=VARCHAR}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransaction" >
+        update thanos_contract_transaction
+        set pk_hash = #{pkHash,jdbcType=VARCHAR},
+            partition_key = #{partitionKey,jdbcType=BIGINT},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            business_time = #{businessTime,jdbcType=TIMESTAMP},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR},
+            tx_detail = #{txDetail,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+          and contract_address = #{contractAddress,jdbcType=VARCHAR}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.netease.thanos.core.depositChain.entity.ThanosContractTransaction" >
+        update thanos_contract_transaction
+        set pk_hash = #{pkHash,jdbcType=VARCHAR},
+            partition_key = #{partitionKey,jdbcType=BIGINT},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            business_time = #{businessTime,jdbcType=TIMESTAMP},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+          and contract_address = #{contractAddress,jdbcType=VARCHAR}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        insert into thanos_contract_transaction (contract_address, pk_hash, partition_key, 
+            create_time, business_time, version, remark, 
+            tx_detail) VALUES 
+        <foreach collection="list" item="item" separator="," >
+             (#{item.contractAddress,jdbcType=VARCHAR}, #{item.pkHash,jdbcType=VARCHAR}, #{item.partitionKey,jdbcType=BIGINT}, 
+                now(), #{item.businessTime,jdbcType=TIMESTAMP}, 1, #{item.remark,jdbcType=VARCHAR}, 
+                #{item.txDetail,jdbcType=LONGVARCHAR})
+        </foreach>
+    </insert>
+
+    <delete id="deleteContractTxByIDs" parameterType="java.util.Map" >
+        delete from thanos_contract_transaction
+        where contract_address = #{contractAddress,jdbcType=VARCHAR}
+        and id in
+        <foreach collection="ids" item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

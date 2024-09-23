@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.thanos.core.depositChain.repository.ThanosEvmTransactionreceiptMapper" >
+    <resultMap id="BaseResultMap" type="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceipt" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="transaction_hash" property="transactionHash" jdbcType="VARCHAR" />
+        <result column="block_hash" property="blockHash" jdbcType="VARCHAR" />
+        <result column="block_number" property="blockNumber" jdbcType="BIGINT" />
+        <result column="transaction_index" property="transactionIndex" jdbcType="BIGINT" />
+        <result column="gas_used" property="gasUsed" jdbcType="BIGINT" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="version" property="version" jdbcType="BIGINT" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptWithBLOBs" extends="BaseResultMap" >
+        <result column="logs" property="logs" jdbcType="LONGVARCHAR" />
+        <result column="error" property="error" jdbcType="LONGVARCHAR" />
+        <result column="execution_result" property="executionResult" jdbcType="LONGVARCHAR" />
+        <result column="detail_info" property="detailInfo" jdbcType="LONGVARCHAR" />
+    </resultMap>
+    <sql id="Example_Where_Clause" >
+        <where >
+            <foreach collection="oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+             AND is_delete = 0 
+        </where>
+    </sql>
+    <sql id="Base_Column_List" >
+        id, transaction_hash, block_hash, block_number, transaction_index, gas_used, create_time, 
+        version, remark
+    </sql>
+    <sql id="Blob_Column_List" >
+        logs, error, execution_result, detail_info
+    </sql>
+    <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_evm_transactionReceipt
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        from thanos_evm_transactionReceipt
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null" >
+            limit 
+            <if test="offset != null" >
+                #{offset} , 
+            </if>
+            #{rows} 
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_evm_transactionReceipt
+        where id = #{id,jdbcType=BIGINT}
+         AND is_delete = 0 
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        UPDATE thanos_evm_transactionReceipt
+        <set >
+            is_delete = 1,
+            <if test="remark != null" >
+                remark = concat(remark,#{remark,jdbcType=VARCHAR}),
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </delete>
+    <insert id="insert" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptWithBLOBs" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_evm_transactionReceipt (transaction_hash, block_hash, block_number, 
+            transaction_index, gas_used, create_time, 
+            version, remark, logs, 
+            error, execution_result, detail_info
+            )
+        values (#{transactionHash,jdbcType=VARCHAR}, #{blockHash,jdbcType=VARCHAR}, #{blockNumber,jdbcType=BIGINT}, 
+            #{transactionIndex,jdbcType=BIGINT}, #{gasUsed,jdbcType=BIGINT}, now(), 
+            1, #{remark,jdbcType=VARCHAR}, #{logs,jdbcType=LONGVARCHAR}, 
+            #{error,jdbcType=LONGVARCHAR}, #{executionResult,jdbcType=LONGVARCHAR}, #{detailInfo,jdbcType=LONGVARCHAR}
+            )
+    </insert>
+    <insert id="insertSelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptWithBLOBs" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_evm_transactionReceipt
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="transactionHash != null" >
+                transaction_hash,
+            </if>
+            <if test="blockHash != null" >
+                block_hash,
+            </if>
+            <if test="blockNumber != null" >
+                block_number,
+            </if>
+            <if test="transactionIndex != null" >
+                transaction_index,
+            </if>
+            <if test="gasUsed != null" >
+                gas_used,
+            </if>
+            create_time,
+            version,
+            <if test="remark != null" >
+                remark,
+            </if>
+            <if test="logs != null" >
+                logs,
+            </if>
+            <if test="error != null" >
+                error,
+            </if>
+            <if test="executionResult != null" >
+                execution_result,
+            </if>
+            <if test="detailInfo != null" >
+                detail_info,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="transactionHash != null" >
+                #{transactionHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockHash != null" >
+                #{blockHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockNumber != null" >
+                #{blockNumber,jdbcType=BIGINT},
+            </if>
+            <if test="transactionIndex != null" >
+                #{transactionIndex,jdbcType=BIGINT},
+            </if>
+            <if test="gasUsed != null" >
+                #{gasUsed,jdbcType=BIGINT},
+            </if>
+            now(),
+            1,
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="logs != null" >
+                #{logs,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="error != null" >
+                #{error,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="executionResult != null" >
+                #{executionResult,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="detailInfo != null" >
+                #{detailInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptExample" resultType="java.lang.Integer" >
+        select count(*) from thanos_evm_transactionReceipt
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <update id="updateByPrimaryKeySelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptWithBLOBs" >
+        update thanos_evm_transactionReceipt
+        <set >
+            <if test="transactionHash != null" >
+                transaction_hash = #{transactionHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockHash != null" >
+                block_hash = #{blockHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockNumber != null" >
+                block_number = #{blockNumber,jdbcType=BIGINT},
+            </if>
+            <if test="transactionIndex != null" >
+                transaction_index = #{transactionIndex,jdbcType=BIGINT},
+            </if>
+            <if test="gasUsed != null" >
+                gas_used = #{gasUsed,jdbcType=BIGINT},
+            </if>
+              version = version + 1,
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="logs != null" >
+                logs = #{logs,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="error != null" >
+                error = #{error,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="executionResult != null" >
+                execution_result = #{executionResult,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="detailInfo != null" >
+                detail_info = #{detailInfo,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceiptWithBLOBs" >
+        update thanos_evm_transactionReceipt
+        set transaction_hash = #{transactionHash,jdbcType=VARCHAR},
+            block_hash = #{blockHash,jdbcType=VARCHAR},
+            block_number = #{blockNumber,jdbcType=BIGINT},
+            transaction_index = #{transactionIndex,jdbcType=BIGINT},
+            gas_used = #{gasUsed,jdbcType=BIGINT},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR},
+            logs = #{logs,jdbcType=LONGVARCHAR},
+            error = #{error,jdbcType=LONGVARCHAR},
+            execution_result = #{executionResult,jdbcType=LONGVARCHAR},
+            detail_info = #{detailInfo,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionreceipt" >
+        update thanos_evm_transactionReceipt
+        set transaction_hash = #{transactionHash,jdbcType=VARCHAR},
+            block_hash = #{blockHash,jdbcType=VARCHAR},
+            block_number = #{blockNumber,jdbcType=BIGINT},
+            transaction_index = #{transactionIndex,jdbcType=BIGINT},
+            gas_used = #{gasUsed,jdbcType=BIGINT},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+         AND is_delete = 0 
+    </update>
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        insert into thanos_evm_transactionReceipt (transaction_hash, block_hash, block_number, 
+            transaction_index, gas_used, create_time, 
+            version, remark, logs, error, 
+            execution_result, detail_info
+            ) VALUES 
+        <foreach collection="list" item="item" separator="," >
+             (#{item.transactionHash,jdbcType=VARCHAR}, #{item.blockHash,jdbcType=VARCHAR}, #{item.blockNumber,jdbcType=BIGINT}, 
+                #{item.transactionIndex,jdbcType=BIGINT}, #{item.gasUsed,jdbcType=BIGINT}, now(), 
+                1, #{item.remark,jdbcType=VARCHAR}, #{item.logs,jdbcType=LONGVARCHAR}, #{item.error,jdbcType=LONGVARCHAR}, 
+                #{item.executionResult,jdbcType=LONGVARCHAR}, #{item.detailInfo,jdbcType=LONGVARCHAR}
+                )
+        </foreach>
+    </insert>
+</mapper>

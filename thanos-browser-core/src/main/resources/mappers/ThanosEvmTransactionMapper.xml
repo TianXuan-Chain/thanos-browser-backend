@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.thanos.core.depositChain.repository.ThanosEvmTransactionMapper" >
+    <resultMap id="BaseResultMap" type="com.netease.thanos.core.depositChain.entity.ThanosEvmTransaction" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <id column="partition_key" property="partitionKey" jdbcType="BIGINT" />
+        <result column="pk_hash" property="pkHash" jdbcType="VARCHAR" />
+        <result column="block_hash" property="blockHash" jdbcType="VARCHAR" />
+        <result column="block_number" property="blockNumber" jdbcType="BIGINT" />
+        <result column="block_timestamp" property="blockTimestamp" jdbcType="TIMESTAMP" />
+        <result column="transaction_index" property="transactionIndex" jdbcType="BIGINT" />
+        <result column="transaction_type" property="transactionType" jdbcType="TINYINT" />
+        <result column="transaction_from" property="transactionFrom" jdbcType="VARCHAR" />
+        <result column="transaction_to" property="transactionTo" jdbcType="VARCHAR" />
+        <result column="gas_limit" property="gasLimit" jdbcType="BIGINT" />
+        <result column="gas_price" property="gasPrice" jdbcType="DECIMAL" />
+        <result column="random_id" property="randomId" jdbcType="VARCHAR" />
+        <result column="contract_address" property="contractAddress" jdbcType="VARCHAR" />
+        <result column="contract_name" property="contractName" jdbcType="VARCHAR" />
+        <result column="contract_version" property="contractVersion" jdbcType="VARCHAR" />
+        <result column="method" property="method" jdbcType="VARCHAR" />
+        <result column="biz_data" property="bizData" jdbcType="VARCHAR" />
+        <result column="trade_stat" property="tradeStat" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="version" property="version" jdbcType="BIGINT" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionWithBLOBs" extends="BaseResultMap" >
+        <result column="params" property="params" jdbcType="LONGVARCHAR" />
+        <result column="input_text" property="inputText" jdbcType="LONGVARCHAR" />
+        <result column="dag_execute_status" property="dagExecuteStatus" jdbcType="LONGVARCHAR" />
+    </resultMap>
+    <sql id="Example_Where_Clause" >
+        <where >
+            <foreach collection="oredCriteria" item="criteria" separator="or" >
+                <if test="criteria.valid" >
+                    <trim prefix="(" suffix=")" prefixOverrides="and" >
+                        <foreach collection="criteria.criteria" item="criterion" >
+                            <choose >
+                                <when test="criterion.noValue" >
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue" >
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue" >
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue" >
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List" >
+        id, partition_key, pk_hash, block_hash, block_number, block_timestamp, transaction_index, 
+        transaction_type, transaction_from, transaction_to, gas_limit, gas_price, random_id, 
+        contract_address, contract_name, contract_version, method, biz_data, trade_stat, 
+        create_time, version, remark
+    </sql>
+    <sql id="Blob_Column_List" >
+        params, input_text, dag_execute_status
+    </sql>
+    <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_evm_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionExample" >
+        select
+        <if test="distinct" >
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        from thanos_evm_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null" >
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null" >
+            limit 
+            <if test="offset != null" >
+                #{offset} , 
+            </if>
+            #{rows} 
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionKey" >
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from thanos_evm_transaction
+        where id = #{id,jdbcType=BIGINT}
+          and partition_key = #{partitionKey,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionKey" >
+        delete from thanos_evm_transaction
+        where id = #{id,jdbcType=BIGINT}
+          and partition_key = #{partitionKey,jdbcType=BIGINT}
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionWithBLOBs" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_evm_transaction (partition_key, pk_hash, block_hash, 
+            block_number, block_timestamp, transaction_index, 
+            transaction_type, transaction_from, transaction_to, 
+            gas_limit, gas_price, random_id, 
+            contract_address, contract_name, contract_version, 
+            method, biz_data, trade_stat, 
+            create_time, version, remark, 
+            params, input_text, dag_execute_status
+            )
+        values (#{partitionKey,jdbcType=BIGINT}, #{pkHash,jdbcType=VARCHAR}, #{blockHash,jdbcType=VARCHAR}, 
+            #{blockNumber,jdbcType=BIGINT}, #{blockTimestamp,jdbcType=TIMESTAMP}, #{transactionIndex,jdbcType=BIGINT}, 
+            #{transactionType,jdbcType=TINYINT}, #{transactionFrom,jdbcType=VARCHAR}, #{transactionTo,jdbcType=VARCHAR}, 
+            #{gasLimit,jdbcType=BIGINT}, #{gasPrice,jdbcType=DECIMAL}, #{randomId,jdbcType=VARCHAR}, 
+            #{contractAddress,jdbcType=VARCHAR}, #{contractName,jdbcType=VARCHAR}, #{contractVersion,jdbcType=VARCHAR}, 
+            #{method,jdbcType=VARCHAR}, #{bizData,jdbcType=VARCHAR}, #{tradeStat,jdbcType=INTEGER}, 
+            now(), 1, #{remark,jdbcType=VARCHAR}, 
+            #{params,jdbcType=LONGVARCHAR}, #{inputText,jdbcType=LONGVARCHAR}, #{dagExecuteStatus,jdbcType=LONGVARCHAR}
+            )
+    </insert>
+    <insert id="insertSelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionWithBLOBs" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into thanos_evm_transaction
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="partitionKey != null" >
+                partition_key,
+            </if>
+            <if test="pkHash != null" >
+                pk_hash,
+            </if>
+            <if test="blockHash != null" >
+                block_hash,
+            </if>
+            <if test="blockNumber != null" >
+                block_number,
+            </if>
+            <if test="blockTimestamp != null" >
+                block_timestamp,
+            </if>
+            <if test="transactionIndex != null" >
+                transaction_index,
+            </if>
+            <if test="transactionType != null" >
+                transaction_type,
+            </if>
+            <if test="transactionFrom != null" >
+                transaction_from,
+            </if>
+            <if test="transactionTo != null" >
+                transaction_to,
+            </if>
+            <if test="gasLimit != null" >
+                gas_limit,
+            </if>
+            <if test="gasPrice != null" >
+                gas_price,
+            </if>
+            <if test="randomId != null" >
+                random_id,
+            </if>
+            <if test="contractAddress != null" >
+                contract_address,
+            </if>
+            <if test="contractName != null" >
+                contract_name,
+            </if>
+            <if test="contractVersion != null" >
+                contract_version,
+            </if>
+            <if test="method != null" >
+                method,
+            </if>
+            <if test="bizData != null" >
+                biz_data,
+            </if>
+            <if test="tradeStat != null" >
+                trade_stat,
+            </if>
+            create_time,
+            version,
+            <if test="remark != null" >
+                remark,
+            </if>
+            <if test="params != null" >
+                params,
+            </if>
+            <if test="inputText != null" >
+                input_text,
+            </if>
+            <if test="dagExecuteStatus != null" >
+                dag_execute_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="partitionKey != null" >
+                #{partitionKey,jdbcType=BIGINT},
+            </if>
+            <if test="pkHash != null" >
+                #{pkHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockHash != null" >
+                #{blockHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockNumber != null" >
+                #{blockNumber,jdbcType=BIGINT},
+            </if>
+            <if test="blockTimestamp != null" >
+                #{blockTimestamp,jdbcType=TIMESTAMP},
+            </if>
+            <if test="transactionIndex != null" >
+                #{transactionIndex,jdbcType=BIGINT},
+            </if>
+            <if test="transactionType != null" >
+                #{transactionType,jdbcType=TINYINT},
+            </if>
+            <if test="transactionFrom != null" >
+                #{transactionFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="transactionTo != null" >
+                #{transactionTo,jdbcType=VARCHAR},
+            </if>
+            <if test="gasLimit != null" >
+                #{gasLimit,jdbcType=BIGINT},
+            </if>
+            <if test="gasPrice != null" >
+                #{gasPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="randomId != null" >
+                #{randomId,jdbcType=VARCHAR},
+            </if>
+            <if test="contractAddress != null" >
+                #{contractAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="contractName != null" >
+                #{contractName,jdbcType=VARCHAR},
+            </if>
+            <if test="contractVersion != null" >
+                #{contractVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="method != null" >
+                #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="bizData != null" >
+                #{bizData,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeStat != null" >
+                #{tradeStat,jdbcType=INTEGER},
+            </if>
+            now(),
+            1,
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null" >
+                #{params,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="inputText != null" >
+                #{inputText,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="dagExecuteStatus != null" >
+                #{dagExecuteStatus,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionExample" resultType="java.lang.Integer" >
+        select count(*) from thanos_evm_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <update id="updateByPrimaryKeySelective" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionWithBLOBs" >
+        update thanos_evm_transaction
+        <set >
+            <if test="pkHash != null" >
+                pk_hash = #{pkHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockHash != null" >
+                block_hash = #{blockHash,jdbcType=VARCHAR},
+            </if>
+            <if test="blockNumber != null" >
+                block_number = #{blockNumber,jdbcType=BIGINT},
+            </if>
+            <if test="blockTimestamp != null" >
+                block_timestamp = #{blockTimestamp,jdbcType=TIMESTAMP},
+            </if>
+            <if test="transactionIndex != null" >
+                transaction_index = #{transactionIndex,jdbcType=BIGINT},
+            </if>
+            <if test="transactionType != null" >
+                transaction_type = #{transactionType,jdbcType=TINYINT},
+            </if>
+            <if test="transactionFrom != null" >
+                transaction_from = #{transactionFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="transactionTo != null" >
+                transaction_to = #{transactionTo,jdbcType=VARCHAR},
+            </if>
+            <if test="gasLimit != null" >
+                gas_limit = #{gasLimit,jdbcType=BIGINT},
+            </if>
+            <if test="gasPrice != null" >
+                gas_price = #{gasPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="randomId != null" >
+                random_id = #{randomId,jdbcType=VARCHAR},
+            </if>
+            <if test="contractAddress != null" >
+                contract_address = #{contractAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="contractName != null" >
+                contract_name = #{contractName,jdbcType=VARCHAR},
+            </if>
+            <if test="contractVersion != null" >
+                contract_version = #{contractVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="method != null" >
+                method = #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="bizData != null" >
+                biz_data = #{bizData,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeStat != null" >
+                trade_stat = #{tradeStat,jdbcType=INTEGER},
+            </if>
+              version = version + 1,
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null" >
+                params = #{params,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="inputText != null" >
+                input_text = #{inputText,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="dagExecuteStatus != null" >
+                dag_execute_status = #{dagExecuteStatus,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+          and partition_key = #{partitionKey,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransactionWithBLOBs" >
+        update thanos_evm_transaction
+        set pk_hash = #{pkHash,jdbcType=VARCHAR},
+            block_hash = #{blockHash,jdbcType=VARCHAR},
+            block_number = #{blockNumber,jdbcType=BIGINT},
+            block_timestamp = #{blockTimestamp,jdbcType=TIMESTAMP},
+            transaction_index = #{transactionIndex,jdbcType=BIGINT},
+            transaction_type = #{transactionType,jdbcType=TINYINT},
+            transaction_from = #{transactionFrom,jdbcType=VARCHAR},
+            transaction_to = #{transactionTo,jdbcType=VARCHAR},
+            gas_limit = #{gasLimit,jdbcType=BIGINT},
+            gas_price = #{gasPrice,jdbcType=DECIMAL},
+            random_id = #{randomId,jdbcType=VARCHAR},
+            contract_address = #{contractAddress,jdbcType=VARCHAR},
+            contract_name = #{contractName,jdbcType=VARCHAR},
+          version = version + 1,
+            method = #{method,jdbcType=VARCHAR},
+            biz_data = #{bizData,jdbcType=VARCHAR},
+            trade_stat = #{tradeStat,jdbcType=INTEGER},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR},
+            params = #{params,jdbcType=LONGVARCHAR},
+            input_text = #{inputText,jdbcType=LONGVARCHAR},
+            dag_execute_status = #{dagExecuteStatus,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+          and partition_key = #{partitionKey,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.netease.thanos.core.depositChain.entity.ThanosEvmTransaction" >
+        update thanos_evm_transaction
+        set pk_hash = #{pkHash,jdbcType=VARCHAR},
+            block_hash = #{blockHash,jdbcType=VARCHAR},
+            block_number = #{blockNumber,jdbcType=BIGINT},
+            block_timestamp = #{blockTimestamp,jdbcType=TIMESTAMP},
+            transaction_index = #{transactionIndex,jdbcType=BIGINT},
+            transaction_type = #{transactionType,jdbcType=TINYINT},
+            transaction_from = #{transactionFrom,jdbcType=VARCHAR},
+            transaction_to = #{transactionTo,jdbcType=VARCHAR},
+            gas_limit = #{gasLimit,jdbcType=BIGINT},
+            gas_price = #{gasPrice,jdbcType=DECIMAL},
+            random_id = #{randomId,jdbcType=VARCHAR},
+            contract_address = #{contractAddress,jdbcType=VARCHAR},
+            contract_name = #{contractName,jdbcType=VARCHAR},
+          version = version + 1,
+            method = #{method,jdbcType=VARCHAR},
+            biz_data = #{bizData,jdbcType=VARCHAR},
+            trade_stat = #{tradeStat,jdbcType=INTEGER},
+          version = version + 1,
+            remark = #{remark,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+          and partition_key = #{partitionKey,jdbcType=BIGINT}
+        <if test="createTime != null" >
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="version != -1" >
+             AND version = #{version,jdbcType=BIGINT}
+        </if>
+    </update>
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        insert into thanos_evm_transaction (partition_key, pk_hash, block_hash, 
+            block_number, block_timestamp, 
+            transaction_index, transaction_type, 
+            transaction_from, transaction_to, 
+            gas_limit, gas_price, random_id, 
+            contract_address, contract_name, 
+            contract_version, method, biz_data, 
+            trade_stat, create_time, version, remark, 
+            params,
+            dag_execute_status) VALUES 
+        <foreach collection="list" item="item" separator="," >
+             (#{item.partitionKey,jdbcType=BIGINT}, #{item.pkHash,jdbcType=VARCHAR}, #{item.blockHash,jdbcType=VARCHAR}, 
+                #{item.blockNumber,jdbcType=BIGINT}, #{item.blockTimestamp,jdbcType=TIMESTAMP}, 
+                #{item.transactionIndex,jdbcType=BIGINT}, #{item.transactionType,jdbcType=TINYINT}, 
+                #{item.transactionFrom,jdbcType=VARCHAR}, #{item.transactionTo,jdbcType=VARCHAR}, 
+                #{item.gasLimit,jdbcType=BIGINT}, #{item.gasPrice,jdbcType=DECIMAL}, #{item.randomId,jdbcType=VARCHAR}, 
+                #{item.contractAddress,jdbcType=VARCHAR}, #{item.contractName,jdbcType=VARCHAR}, 
+                #{item.contractVersion,jdbcType=VARCHAR}, #{item.method,jdbcType=VARCHAR}, #{item.bizData,jdbcType=VARCHAR}, 
+                #{item.tradeStat,jdbcType=INTEGER}, now(), 1, #{item.remark,jdbcType=VARCHAR}, 
+                #{item.params,jdbcType=LONGVARCHAR},
+                #{item.dagExecuteStatus,jdbcType=LONGVARCHAR})
+        </foreach>
+    </insert>
+    <select id="maxId" resultType="java.lang.Long" >
+        select max(id) from thanos_evm_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+    <select id="minId" resultType="java.lang.Long" >
+        select min(id) from thanos_evm_transaction
+        <if test="_parameter != null" >
+            <include refid="Example_Where_Clause" />
+        </if>
+    </select>
+</mapper>

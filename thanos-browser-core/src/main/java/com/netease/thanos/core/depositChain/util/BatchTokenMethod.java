@@ -1,0 +1,117 @@
+package com.netease.thanos.core.depositChain.util;
+
+import com.alibaba.fastjson.JSON;
+import com.netease.thanos.common.constants.BlockChainMethodPreifx;
+
+import com.thanos.web3j.abi.TypeReference;
+import com.thanos.web3j.abi.datatypes.Address;
+import com.thanos.web3j.abi.datatypes.DynamicArray;
+import com.thanos.web3j.abi.datatypes.Function;
+import com.thanos.web3j.abi.datatypes.Type;
+import com.thanos.web3j.abi.datatypes.generated.Bytes32;
+import com.thanos.web3j.abi.datatypes.generated.Uint256;
+import com.thanos.web3j.utils.Numeric;
+import org.apache.commons.lang3.StringUtils;
+
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Created by dumaobing on 2018/6/3
+ */
+public class BatchTokenMethod {
+
+    public static Function getTransferFunc() {
+
+        return new Function("batchTransfer",
+
+                Arrays.<Type>asList(new DynamicArray<Address>(Arrays.asList(new Address("0x1d2047204130de907799adaea85c511c7ce85b6d"))), new DynamicArray<Uint256>(Arrays.asList(new Uint256(1l))), new DynamicArray<Bytes32>(Arrays.asList(stringToBytes32("123"))), new DynamicArray<Bytes32>(Arrays.asList(stringToBytes32("123")))),
+                Arrays.<TypeReference<?>>asList(new TypeReference<DynamicArray<Address>>() {
+                                                }, new TypeReference<DynamicArray<Uint256>>() {
+                                                }, new TypeReference<DynamicArray<Bytes32>>() {
+                                                },
+                        new TypeReference<DynamicArray<Bytes32>>() {
+                        }));
+
+    }
+
+    public static Bytes32 stringToBytes32(String string) {
+        byte[] byteValue = string.getBytes();
+        byte[] byteValueLen32 = new byte[32];
+        System.arraycopy(byteValue, 0, byteValueLen32, 0, byteValue.length);
+        return new Bytes32(byteValueLen32);
+    }
+
+
+    public static String hexToASCII(String hexValue) {
+        StringBuilder output = new StringBuilder("");
+        for (int i = 0; i < hexValue.length(); i += 2) {
+
+            String str = hexValue.substring(i, i + 2);
+            output.append((char) Integer.parseInt(str, 16));
+        }
+        return output.toString();
+    }
+
+
+    public static String getTransferSign() {
+        return MethodAndParamAnalyze.buildMethodSign(getTransferFunc().getName(), getTransferFunc().getInputParameters());
+    }
+
+    public static List<Type> getTransferValTypeList(String val) {
+
+        if (StringUtils.isEmpty(val) || val.length() < 11) {
+            return Collections.EMPTY_LIST;
+        }
+
+        return MethodAndParamAnalyze.getTypeList(getTransferFunc(), val.substring(10));
+    }
+
+
+    public static List<SingleTransaction> toSingleTx(String inputData) {
+        if (StringUtils.isBlank(inputData) || !inputData.startsWith(BlockChainMethodPreifx.BATCH_METHOD_SIGN)) {
+            return null;
+        }
+        List<Type> typeList = getTransferValTypeList(inputData);
+        List<SingleTransaction> singleTransactionList = new ArrayList<>();
+        List<Type> addrList = (List<Type>) typeList.get(0).getValue();
+        SingleTransaction st = null;
+        for (Type addr : addrList) {
+            st = new SingleTransaction();
+            st.setTo(new Address(addr.toString()).toString());
+            singleTransactionList.add(st);
+        }
+        List<Type> valList = (List<Type>) typeList.get(1).getValue();
+        for (int i = 0; i < valList.size(); i++) {
+            BigDecimal val = BigDecimal.valueOf(Long.valueOf(valList.get(i).getValue().toString())).divide(new BigDecimal(100000000l));
+            singleTransactionList.get(i).setTokens(val);
+        }
+        List<Type> traceIdList = (List<Type>) typeList.get(2).getValue();
+        for (int i = 0; i < traceIdList.size(); i++) {
+            String traceId = hexToASCII(Numeric.toHexStringNoPrefix((byte[]) traceIdList.get(i).getValue())).replaceAll("\u0000", "");
+            singleTransactionList.get(i).setTraceId(traceId);
+        }
+        List<Type> realtimes = (List<Type>) typeList.get(3).getValue();
+        for (int i = 0; i < realtimes.size(); i++) {
+            String realtime = hexToASCII(Numeric.toHexStringNoPrefix((byte[]) realtimes.get(i).getValue())).replaceAll("\u0000", "");
+            singleTransactionList.get(i).setRealtime(realtime);
+        }
+        return singleTransactionList;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("method sign: " + getTransferSign());
+
+//        List<Type> typeList = getTransferValTypeList("0xe584a6d400000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002c00000000000000000000000000000000000000000000000000000000000000005000000000000000000000000ca35b7d915458ef540ade6068dfe2f44e8fa733c00000000000000000000000014723a09acff6d2a60dcdf7aa4aff308fddc160c0000000000000000000000004b0897b0513fdc7c541b6d9d7e929c4e5364d2db000000000000000000000000583031d1113ad414f02576bd6afabfb302140225000000000000000000000000dd870fa1b7c4700f2bd7f44238821c26f73921480000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005303030303030303030303030303131303030303130303030353534454130354230303030303030303030303030313130303030313030303035353445413035423030303030303030303030303031313030303031303030303535344541303542303030303030303030303030303131303030303130303030353534454130354230303030303030303030303030313130303030313030303035353445413035420000000000000000000000000000000000000000000000000000000000000005323031382d30392d32352031313a30303a303100000000000000000000000000323031382d30392d32352031313a30303a303100000000000000000000000000323031382d30392d32352031313a30303a303100000000000000000000000000323031382d30392d32352031313a30303a303100000000000000000000000000323031382d30392d32352031313a30303a303100000000000000000000000000");
+
+        List<SingleTransaction> ret = toSingleTx("0xe584a6d4000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000280000000000000000000000000000000000000000000000000000000000000038000000000000000000000000000000000000000000000000000000000000000070000000000000000000000001594a917be1467906bd6b6ce951e3c479a695f9800000000000000000000000069c3f65f4ad379b4924885718595ea6eff4d726a0000000000000000000000003ee2d74890c0334328f9edbfed810d94908e05c90000000000000000000000003ee2d74890c0334328f9edbfed810d94908e05c900000000000000000000000069c3f65f4ad379b4924885718595ea6eff4d726a0000000000000000000000003ee2d74890c0334328f9edbfed810d94908e05c90000000000000000000000001e6878d7a0f7b282d27fbb4f657d7aaedd640183000000000000000000000000000000000000000000000000000000000000000700000000000000000000000000000000000000000000000000000000007a99be000000000000000000000000000000000000000000000000000000000495881a00000000000000000000000000000000000000000000000000000000043bd77a0000000000000000000000000000000000000000000000000000000003881ff000000000000000000000000000000000000000000000000000000000051dd8960000000000000000000000000000000000000000000000000000000000cc65820000000000000000000000000000000000000000000000000000000001d9e904000000000000000000000000000000000000000000000000000000000000000730303030303030303030303030313130303031323030303038363741413235423030303030303030303030303031313030303130303030304238314541333542303030303030303030303030303131303030303430303030384337434132354230303030303030303030303030313130303030393030303039443537413335423030303030303030303030303031313030303132303030304334374141323542303030303030303030303030303131303030303230303030463333424133354230303030303030303030303030313130303031333030303044393738413235420000000000000000000000000000000000000000000000000000000000000007323031382d30392d32302030313a30313a303000000000000000000000000000323031382d30392d32302032333a35313a313100000000000000000000000000323031382d30392d32302030373a35353a323200000000000000000000000000323031382d30392d32302032333a33383a343100000000000000000000000000323031382d30392d32302031313a35313a333900000000000000000000000000323031382d30392d32302031353a34373a353500000000000000000000000000323031382d30392d32302031313a34333a323200000000000000000000000000");
+        System.out.println(JSON.toJSONString(ret));
+
+    }
+
+}
