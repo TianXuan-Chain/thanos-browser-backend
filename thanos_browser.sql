@@ -75,7 +75,7 @@ CREATE TABLE `thanos_contract_transaction`  (
   `pk_hash` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '交易hash值',
   `partition_key` bigint(20) NOT NULL COMMENT '交易时间Key',
   `tx_detail` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '交易详情',
-  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `business_time` datetime NULL DEFAULT NULL COMMENT '业务时间',
   `version` bigint(20) NULL DEFAULT 1 COMMENT '版本号',
