@@ -21,7 +21,7 @@ CREATE TABLE `thanos_block`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_hash`(`pk_hash`) USING BTREE,
   UNIQUE INDEX `idx_number`(`number`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 116 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链区块信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链区块信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for thanos_blockChainInfo
@@ -40,7 +40,7 @@ CREATE TABLE `thanos_blockChainInfo`  (
   `remark` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述',
   `is_delete` tinyint(2) NULL DEFAULT 0 COMMENT '1:删除；0:正常',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链全局信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链全局信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for thanos_contract
@@ -63,7 +63,7 @@ CREATE TABLE `thanos_contract`  (
   `is_delete` tinyint(2) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `contract_address`(`contract_address`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '浏览器-合约信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '浏览器-合约信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for thanos_contract_transaction
@@ -82,7 +82,7 @@ CREATE TABLE `thanos_contract_transaction`  (
   `remark` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '备注',
   `is_delete` tinyint(2) NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`, `contract_address`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '浏览器-合约交易表' ROW_FORMAT = Dynamic PARTITION BY KEY (`contract_address`)
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '浏览器-合约交易表' ROW_FORMAT = Dynamic PARTITION BY KEY (`contract_address`)
 PARTITIONS 63
 (PARTITION `p0` MAX_ROWS = 0 MIN_ROWS = 0 ,
 PARTITION `p1` MAX_ROWS = 0 MIN_ROWS = 0 ,
@@ -185,15 +185,9 @@ CREATE TABLE `thanos_evm_transaction`  (
   INDEX `idx_number`(`block_number`, `partition_key`) USING BTREE,
   INDEX `idx_from`(`transaction_from`, `partition_key`) USING BTREE,
   INDEX `idx_hash`(`pk_hash`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链EVM交易信息表' ROW_FORMAT = Dynamic PARTITION BY RANGE (partition_key)
-PARTITIONS 7
-(PARTITION `p20240918` VALUES LESS THAN (20240918) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0 ,
-PARTITION `p20240919` VALUES LESS THAN (20240919) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0 ,
-PARTITION `p20240920` VALUES LESS THAN (20240920) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0 ,
-PARTITION `p20240921` VALUES LESS THAN (20240921) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0 ,
-PARTITION `p20240922` VALUES LESS THAN (20240922) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0 ,
-PARTITION `p20240923` VALUES LESS THAN (20240923) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0 ,
-PARTITION `p20240924` VALUES LESS THAN (20240924) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0 )
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链EVM交易信息表' ROW_FORMAT = Dynamic PARTITION BY RANGE (partition_key)
+PARTITIONS 1
+(PARTITION `p20240918` VALUES LESS THAN (20240918) ENGINE = InnoDB MAX_ROWS = 0 MIN_ROWS = 0)
 ;
 
 -- ----------------------------
@@ -218,7 +212,7 @@ CREATE TABLE `thanos_evm_transactionReceipt`  (
   `is_delete` tinyint(2) NULL DEFAULT 0 COMMENT '1:删除；0:正常',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_hash`(`transaction_hash`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链交易回执信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链交易回执信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for thanos_global_event
@@ -240,7 +234,7 @@ CREATE TABLE `thanos_global_event`  (
   `is_delete` tinyint(2) NULL DEFAULT 0 COMMENT '1:删除；0:正常',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_event_hash`(`event_hash`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链全局事件表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链全局事件表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for thanos_tnxByDay
@@ -257,7 +251,7 @@ CREATE TABLE `thanos_tnxByDay`  (
   `is_delete` tinyint(2) NULL DEFAULT 0 COMMENT '1:删除；0:正常',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_pk_date`(`pk_date`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链每日交易量记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '天玄链每日交易量记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Procedure structure for create_time_partition
@@ -267,14 +261,14 @@ delimiter ;;
 CREATE DEFINER=`root`@`%` PROCEDURE `create_time_partition`()
 BEGIN
     DECLARE start_date INT DEFAULT 20240919;
-    DECLARE end_date INT DEFAULT DATE_FORMAT(CURDATE(), '%Y%m%d');
+    DECLARE end_date INT DEFAULT DATE_FORMAT(CURDATE() + INTERVAL 1 DAY, '%Y%m%d');
     DECLARE partition_name VARCHAR(32); -- 设定一个合适的长度
 
     WHILE start_date <= end_date DO
         SET partition_name = CONCAT('p', start_date);
         
         -- 使用PREPARE语句来执行动态 SQL
-        SET @sql = CONCAT('ALTER TABLE thanos_evm_transaction_test ADD PARTITION (PARTITION ', partition_name, ' VALUES LESS THAN (', start_date + 1, '))');
+        SET @sql = CONCAT('ALTER TABLE thanos_evm_transaction ADD PARTITION (PARTITION ', partition_name, ' VALUES LESS THAN (', start_date , '))');
         PREPARE stmt FROM @sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
@@ -284,5 +278,7 @@ BEGIN
 END
 ;;
 delimiter ;
+
+call create_time_partition();
 
 SET FOREIGN_KEY_CHECKS = 1;
