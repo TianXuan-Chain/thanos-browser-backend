@@ -260,20 +260,24 @@ DROP PROCEDURE IF EXISTS `create_time_partition`;
 delimiter ;;
 CREATE DEFINER=`root`@`%` PROCEDURE `create_time_partition`()
 BEGIN
-    DECLARE start_date INT DEFAULT 20240919;
-    DECLARE end_date INT DEFAULT DATE_FORMAT(CURDATE() + INTERVAL 1 DAY, '%Y%m%d');
+    DECLARE start_date DATETIME DEFAULT DATE_ADD(CURDATE(), INTERVAL -60 DAY);
+    DECLARE end_date DATETIME DEFAULT DATE_ADD(CURDATE(), INTERVAL 1 DAY);
     DECLARE partition_name VARCHAR(32); -- 设定一个合适的长度
+    DECLARE partition_date INT; -- 每个分区的日期字符串
 
     WHILE start_date <= end_date DO
-        SET partition_name = CONCAT('p', start_date);
+        -- 格式化日期为 YYYYMMDD
+        SET partition_date = DATE_FORMAT(start_date, '%Y%m%d');
+        SET partition_name = CONCAT('p', partition_date);
         
         -- 使用PREPARE语句来执行动态 SQL
-        SET @sql = CONCAT('ALTER TABLE thanos_evm_transaction ADD PARTITION (PARTITION ', partition_name, ' VALUES LESS THAN (', start_date , '))');
+        SET @sql = CONCAT('ALTER TABLE thanos_evm_transaction ADD PARTITION (PARTITION ', partition_name, ' VALUES LESS THAN (', partition_date, '))');
         PREPARE stmt FROM @sql;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
         
-        SET start_date = start_date + 1;
+        -- 递增日期
+        SET start_date = DATE_ADD(start_date, INTERVAL 1 DAY);
     END WHILE;
 END
 ;;
